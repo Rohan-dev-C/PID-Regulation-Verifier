@@ -1,12 +1,16 @@
 """
-pid2graph package initialisation.
+src package for PID-Diagram-Analyzer.
 
-Having this file makes the directory importable as `import src ...`.
-It also sets a root logger configuration so sub-modules inherit it.
+Having this file means you can do:
+
+    >>> from src.pid_parser import PIDParser
+
+from anywhere once the `src/` directory is on `sys.path`.
+
+It also sets a simple root logger so all sub-modules inherit it.
 """
 from __future__ import annotations
 import logging
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
