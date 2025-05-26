@@ -19,7 +19,6 @@ def ocr_text(img, lang: str = "eng") -> str:
     lang : str
         Tesseract language code, default "eng".
     """
-    # pytesseract expects RGB
     if len(img.shape) == 2:
         rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     else:

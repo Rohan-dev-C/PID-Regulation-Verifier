@@ -1,0 +1,7 @@
+src/**/__pycache__/
+tests/**/__pycache__/
+data/pid/*
+data/sop/*
+output/
+pre-trained-models/*
+*.log
