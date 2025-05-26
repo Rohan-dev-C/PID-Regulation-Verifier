@@ -1,5 +1,5 @@
 """
-Convert a P&ID PDF into detected components (but not yet a graph).
+Convert a P&ID PDF into detected components.
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _to_np(arr):
-    """Helper: torch.Tensor → np.ndarray, otherwise return np.asarray(arr)."""
+    """torch.Tensor → np.ndarray, else np.asarray."""
     return arr.cpu().numpy() if hasattr(arr, "cpu") else np.asarray(arr)
 
 
@@ -28,18 +28,37 @@ class PIDParser:
     """
     Parse a P&ID PDF into a list of detected components.
 
-    The class-level ``model`` allows monkey-patching in tests.
+    * Robustly loads the YOLO model:
+        1. Try the path/name in `settings.yolo_model`.
+        2. If that fails, fall back to `"yolov8n.pt"` which Ultralytics
+           auto-downloads and caches.
     """
-    model: YOLO | None = None  # populated lazily in __init__
+
+    model: YOLO | None = None  # class-level cache
 
     def __init__(self, pdf_path: Path | str | None = None) -> None:
         self.pdf_path = Path(pdf_path or settings.pid_path)
+
         if PIDParser.model is None:
-            LOGGER.info("Loading YOLO model from %s", settings.yolo_model)
-            PIDParser.model = YOLO(settings.yolo_model)
+            PIDParser.model = self._load_model()
             PIDParser.model.fuse()
 
-    # ------------------------------------------------------------------ public
+    # ──────────────────────────────────────────────────────────────────────
+    def _load_model(self) -> YOLO:
+        """Try user-provided model, else fall back to yolov8n.pt."""
+        model_ref = settings.yolo_model
+        try:
+            LOGGER.info("Loading YOLO model from %s", model_ref)
+            return YOLO(model_ref)
+        except Exception as exc:  # noqa: BLE001
+            LOGGER.warning(
+                "❌ Could not load model '%s' (%s). Falling back to 'yolov8n.pt'.",
+                model_ref,
+                exc,
+            )
+            return YOLO("yolov8n.pt")
+
+    # ──────────────────────────────────────────────────────────────────────
     def parse(self) -> List[Component]:
         images = self._pdf_to_images()
         comps: List[Component] = []
@@ -47,11 +66,10 @@ class PIDParser:
             comps.extend(self._process_page(img, idx))
         return comps
 
-    # ---------------------------------------------------------------- private
+    # ──────────────────────────────────────────────────────────────────────
     def _pdf_to_images(self) -> List[np.ndarray]:
-        LOGGER.info("Converting %s to image(s)…", self.pdf_path)
         pil_pages = convert_from_path(str(self.pdf_path))
-        return [cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR) for pil in pil_pages]
+        return [cv2.cvtColor(np.array(p), cv2.COLOR_RGB2BGR) for p in pil_pages]
 
     def _process_page(self, img: np.ndarray, page_idx: int) -> List[Component]:
         img = deskew(img)
@@ -60,24 +78,19 @@ class PIDParser:
             img, conf=settings.detection_conf, verbose=False
         )[0]
 
-        # ── normalise result arrays to NumPy ────────────────────────────────
-        xyxy = _to_np(results.boxes.xyxy)
-        cls_arr = _to_np(results.boxes.cls)
-        conf_arr = _to_np(results.boxes.conf)
+        xyxy   = _to_np(results.boxes.xyxy)
+        cls_id = _to_np(results.boxes.cls)
+        confs  = _to_np(results.boxes.conf)
 
         comps: List[Component] = []
         for i, det in enumerate(xyxy):
             x1, y1, x2, y2 = map(int, det[:4])
-            cls_id = int(cls_arr[i])
-            conf = float(conf_arr[i])
-
-            label = PIDParser.model.model.names[cls_id]  # type: ignore[attr-defined]
+            label = PIDParser.model.model.names[int(cls_id[i])]  # type: ignore[attr-defined]
             comp_type = (
                 ComponentType(label)
                 if label in ComponentType.__members__.values()
                 else ComponentType.OTHER
             )
-
             crop = img[y1:y2, x1:x2]
             text = ocr_text(crop, lang=settings.ocr_lang)
 
@@ -87,10 +100,7 @@ class PIDParser:
                     type=comp_type,
                     label=text or label,
                     bbox=(x1, y1, x2 - x1, y2 - y1),
-                    attributes={"confidence": f"{conf:.2f}"},
+                    attributes={"confidence": f"{float(confs[i]):.2f}"},
                 )
             )
-            LOGGER.debug("Detected %s @ %s (%s)", comp_type, (x1, y1, x2, y2), text or label)
-
-        LOGGER.info("Page %d: %d components", page_idx, len(comps))
         return comps
