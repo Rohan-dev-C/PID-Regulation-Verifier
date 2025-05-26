@@ -19,8 +19,6 @@ from .comparator import Comparator
 LOGGER = logging.getLogger(__name__)
 app = typer.Typer(add_completion=False)
 
-
-# --------------------------------------------------------------------------- #
 def _save_graph_pickle(graph, path: Path) -> None:
     """Version-agnostic helper to pickle a NetworkX graph."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -37,11 +35,9 @@ def run(
 ) -> None:
     LOGGER.info("Starting pipeline")
 
-    # ---------- P&ID → components ------------------------------------------
     pid_parser = PIDParser(pid)
     components = pid_parser.parse()
 
-    # Need first-page image for edge detection demo
     import pdf2image, numpy as np, cv2
 
     first_page = pdf2image.convert_from_path(str(pid))[0]
@@ -51,11 +47,8 @@ def run(
     G = graph_builder.build()
 
     _save_graph_pickle(G, out / "graphs" / "pid_graph.gpickle")
-
-    # ---------- SOP parse ---------------------------------------------------
     sop_reqs = SOPParser(sop).parse()
 
-    # ---------- Compare & log ----------------------------------------------
     Comparator(G, sop_reqs, out / "logs" / "discrepancies.jsonl").run()
     LOGGER.info("Pipeline complete ✅")
 

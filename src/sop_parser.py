@@ -44,7 +44,6 @@ class SOPParser:
 
         step_idx = 0
 
-        # ── 1) Paragraphs (incl. bullets / numbering) ────────────────────
         for para in doc.paragraphs:
             text = para.text.strip()
             if not text:
@@ -54,7 +53,6 @@ class SOPParser:
             comp_by_step[step_id] = self._extract_components(text)
             step_idx += 1
 
-        # ── 2) Table cells ───────────────────────────────────────────────
         for t_idx, table in enumerate(doc.tables):
             for r_idx, row in enumerate(table.rows):
                 for c_idx, cell in enumerate(row.cells):
@@ -67,7 +65,6 @@ class SOPParser:
         LOGGER.info("Extracted %d SOP steps (paragraphs + table cells)", len(comp_by_step))
         return comp_by_step
 
-    # ---------------------------------------------------------------------
     @staticmethod
     def _extract_components(text: str) -> List[str]:
         """

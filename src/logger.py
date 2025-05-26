@@ -21,7 +21,6 @@ class DiscrepancyLogger:
         self._buffer: List[Dict[str, Any]] = []
         self._log = logging.getLogger(self.__class__.__name__)
 
-    # -------------------------------------------------------------------- #
     def log(
         self,
         category: str,
@@ -39,7 +38,6 @@ class DiscrepancyLogger:
         self._buffer.append(entry)
         getattr(self._log, level, self._log.error)(message)
 
-    # -------------------------------------------------------------------- #
     def flush(self) -> None:
         if not self._buffer:
             return
@@ -58,7 +56,6 @@ class DiscrepancyLogger:
         )
         self._buffer.clear()
 
-    # -------------------------------------------------------------------- #
     def _write_markdown_report(self) -> None:
         """Convert the entire JSONL file to a Markdown table."""
         if not self.jsonl_path.is_file():

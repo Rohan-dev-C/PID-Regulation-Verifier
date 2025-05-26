@@ -3,7 +3,6 @@ Compare SOP requirements versus the P&ID graph and log discrepancies.
 """
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 from typing import Dict, List
@@ -21,13 +20,11 @@ class Comparator:
         self.sop_reqs = sop_reqs
         self.logger = DiscrepancyLogger(log_path)
 
-    # ---------------------------------------------------------------- public
     def run(self) -> None:
         self._missing_components()
         self._unused_components()
         self.logger.flush()
 
-    # ---------------------------------------------------------------- private
     def _missing_components(self) -> None:
         pid_labels = {data["label"] for _, data in self.graph.nodes(data=True) if data["label"]}
         for step, required in self.sop_reqs.items():

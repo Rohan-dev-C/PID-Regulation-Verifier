@@ -34,7 +34,7 @@ class PIDParser:
            auto-downloads and caches.
     """
 
-    model: YOLO | None = None  # class-level cache
+    model: YOLO | None = None  
 
     def __init__(self, pdf_path: Path | str | None = None) -> None:
         self.pdf_path = Path(pdf_path or settings.pid_path)
@@ -43,22 +43,20 @@ class PIDParser:
             PIDParser.model = self._load_model()
             PIDParser.model.fuse()
 
-    # ──────────────────────────────────────────────────────────────────────
     def _load_model(self) -> YOLO:
         """Try user-provided model, else fall back to yolov8n.pt."""
         model_ref = settings.yolo_model
         try:
             LOGGER.info("Loading YOLO model from %s", model_ref)
             return YOLO(model_ref)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  
             LOGGER.warning(
-                "❌ Could not load model '%s' (%s). Falling back to 'yolov8n.pt'.",
+                "Could not load model '%s' (%s). Falling back to 'yolov8n.pt'.",
                 model_ref,
                 exc,
             )
             return YOLO("yolov8n.pt")
 
-    # ──────────────────────────────────────────────────────────────────────
     def parse(self) -> List[Component]:
         images = self._pdf_to_images()
         comps: List[Component] = []
@@ -66,7 +64,6 @@ class PIDParser:
             comps.extend(self._process_page(img, idx))
         return comps
 
-    # ──────────────────────────────────────────────────────────────────────
     def _pdf_to_images(self) -> List[np.ndarray]:
         pil_pages = convert_from_path(str(self.pdf_path))
         return [cv2.cvtColor(np.array(p), cv2.COLOR_RGB2BGR) for p in pil_pages]
@@ -74,7 +71,7 @@ class PIDParser:
     def _process_page(self, img: np.ndarray, page_idx: int) -> List[Component]:
         img = deskew(img)
 
-        results = PIDParser.model.predict(  # type: ignore[arg-type]
+        results = PIDParser.model.predict( 
             img, conf=settings.detection_conf, verbose=False
         )[0]
 
@@ -85,7 +82,7 @@ class PIDParser:
         comps: List[Component] = []
         for i, det in enumerate(xyxy):
             x1, y1, x2, y2 = map(int, det[:4])
-            label = PIDParser.model.model.names[int(cls_id[i])]  # type: ignore[attr-defined]
+            label = PIDParser.model.model.names[int(cls_id[i])]  
             comp_type = (
                 ComponentType(label)
                 if label in ComponentType.__members__.values()

@@ -19,9 +19,8 @@ LOGGER = logging.getLogger(__name__)
 class GraphBuilder:
     def __init__(self, components: List[Component], original_img):
         self.components = components
-        self.img = original_img  # BGR numpy image
-
-    # ---------------------------------------------------------------- public
+        self.img = original_img  
+        
     def build(self) -> nx.Graph:
         G = nx.Graph()
         for comp in self.components:
@@ -40,7 +39,6 @@ class GraphBuilder:
         LOGGER.info("Graph built - %d nodes, %d edges", G.number_of_nodes(), G.number_of_edges())
         return G
 
-    # ---------------------------------------------------------------- private
     def _infer_edges(self) -> List[Edge]:
         """
         Ultra-light heuristic:
@@ -51,7 +49,6 @@ class GraphBuilder:
         """
         bin_img = preprocess(self.img)
         lines = cv2.Canny(bin_img, 50, 150, apertureSize=3)
-        # Hough transform to find line segments (optional)
         edges: List[Edge] = []
 
         centroids = {
@@ -63,13 +60,11 @@ class GraphBuilder:
         }
         ids = list(centroids.keys())
 
-        # naive O(N²) proximity search
         for i in range(len(ids)):
             for j in range(i + 1, len(ids)):
                 p1, p2 = centroids[ids[i]], centroids[ids[j]]
-                # draw short line between centroids & sample pixels
                 mask = self._sample_line(lines, p1, p2)
-                if np.count_nonzero(mask) > 0:  # at least one Canny edge on the path
+                if np.count_nonzero(mask) > 0:  
                     edges.append(Edge(src_id=ids[i], dst_id=ids[j]))
                     LOGGER.debug("Edge inferred %s ↔ %s", ids[i], ids[j])
         return edges

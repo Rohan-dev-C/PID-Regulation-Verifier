@@ -16,7 +16,7 @@ class ComponentType(str, Enum):
     OTHER = "other"
 
 
-BBox = Tuple[int, int, int, int]  # x, y, w, h
+BBox = Tuple[int, int, int, int] 
 
 
 @dataclass
