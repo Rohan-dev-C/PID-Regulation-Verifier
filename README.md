@@ -44,3 +44,8 @@ Shell script that runs the whole program. Make sure to paste SOP and P&ID files 
 cd PID-Regulation-Verifier
 bash scripts/run_pipeline.sh
 ```
+
+# Testing/Output
+
+1. Includes Unit Tests in `tests/` for all main Python scripts
+2. Can Check Output in `output/graphs` and `output/logs`
