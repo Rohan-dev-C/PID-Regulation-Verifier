@@ -39,7 +39,7 @@ export YOLO_MODEL=yolov8n.pt
 
 # Running the Program
 
-Shell script that runs the whole program: 
+Shell script that runs the whole program. Make sure to paste SOP and P&ID files into the `data/` folder beforehand. 
 ```bash
 cd PID-Regulation-Verifier
 bash scripts/run_pipeline.sh
