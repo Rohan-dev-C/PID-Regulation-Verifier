@@ -3,7 +3,6 @@ from docx import Document
 from src.sop_parser import SOPParser
 
 def test_sop_parser_extracts_allcaps(tmp_path):
-    # create a small .docx with two paragraphs
     p = tmp_path / "sample.docx"
     doc = Document()
     doc.add_paragraph("Initialize PUMP and VALVE before operation.")
@@ -13,7 +12,6 @@ def test_sop_parser_extracts_allcaps(tmp_path):
     parser = SOPParser(sop_path=p)
     result = parser.parse()
 
-    # Expect two steps, labels extracted
     assert "step_0" in result
     assert set(result["step_0"]) == {"PUMP", "VALVE"}
 

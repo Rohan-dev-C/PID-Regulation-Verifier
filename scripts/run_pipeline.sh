@@ -10,6 +10,6 @@ OUT="output"
 
 python -m src.main --pid "$PID" --sop "$SOP" --out "$OUT"
 
-echo "✅ Pipeline complete."
+echo "Pipeline complete."
 echo "  - Graph:        $OUT/graphs/pid_graph.gpickle"
 echo "  - Discrepancies: $OUT/logs/discrepancies.jsonl"
