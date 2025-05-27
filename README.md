@@ -27,5 +27,20 @@ A compliance analysis tool that verifies whether a P&ID (Piping and Instrumentat
   conda activate pid-verifier
   ```
 
+# Custom Configurations
 
+Environment variables can be set to customize the program, but all variables will be set in `config.py` otherwise.
+```bash
+export PID_PATH=data/pid/diagram.pdf
+export SOP_PATH=data/sop/sop.docx
+export OUTPUT_DIR=output/
+export YOLO_MODEL=yolov8n.pt
+```
 
+# Running the Program
+
+Shell script that runs the whole program: 
+```bash
+cd PID-Regulation-Verifier
+bash scripts/run_pipeline.sh
+```
