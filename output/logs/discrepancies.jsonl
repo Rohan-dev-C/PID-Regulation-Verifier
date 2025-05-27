@@ -1,7 +1,0 @@
-{"ts": "2025-05-26T23:30:06+00:00", "level": "ERROR", "category": "MISSING_COMPONENT", "message": "SOP para_1 requires ['PHA', 'HAZOP'] not found in P&ID", "step": "para_1", "missing": ["PHA", "HAZOP"]}
-{"ts": "2025-05-26T23:30:06+00:00", "level": "ERROR", "category": "MISSING_COMPONENT", "message": "SOP para_3 requires ['OTHER', 'CONTENT', 'HERE'] not found in P&ID", "step": "para_3", "missing": ["OTHER", "CONTENT", "HERE"]}
-{"ts": "2025-05-26T23:30:06+00:00", "level": "ERROR", "category": "MISSING_COMPONENT", "message": "SOP table0_r1c0 requires ['F-715'] not found in P&ID", "step": "table0_r1c0", "missing": ["F-715"]}
-{"ts": "2025-05-26T23:30:06+00:00", "level": "ERROR", "category": "MISSING_COMPONENT", "message": "SOP table0_r2c0 requires ['V-745'] not found in P&ID", "step": "table0_r2c0", "missing": ["V-745"]}
-{"ts": "2025-05-26T23:30:06+00:00", "level": "ERROR", "category": "MISSING_COMPONENT", "message": "SOP table0_r3c0 requires ['E-742'] not found in P&ID", "step": "table0_r3c0", "missing": ["E-742"]}
-{"ts": "2025-05-26T23:30:06+00:00", "level": "ERROR", "category": "MISSING_COMPONENT", "message": "SOP table0_r4c0 requires ['E-742'] not found in P&ID", "step": "table0_r4c0", "missing": ["E-742"]}
-{"ts": "2025-05-26T23:30:06+00:00", "level": "ERROR", "category": "MISSING_COMPONENT", "message": "SOP table0_r5c0 requires ['AC-746'] not found in P&ID", "step": "table0_r5c0", "missing": ["AC-746"]}
