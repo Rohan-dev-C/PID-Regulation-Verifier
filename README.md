@@ -29,7 +29,7 @@ A compliance analysis tool that verifies whether a P&ID (Piping and Instrumentat
 
 # Custom Configurations
 
-Environment variables can be set to customize the program, but all variables will be set in `config.py` otherwise.
+Environment variables can be set to customize the program, but all variables will be set in `run_pipeline.sh` otherwise.
 ```bash
 export PID_PATH=data/pid/diagram.pdf
 export SOP_PATH=data/sop/sop.docx
